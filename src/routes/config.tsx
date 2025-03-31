@@ -12,7 +12,7 @@ const routeConfig: RouteObject[] = [
     element: <Home />,
   },
   {
-    path: '/Login',
+    path: '/Auth',
     element: <Register />,
   },
 

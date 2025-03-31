@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FaBars, FaUser } from "react-icons/fa";
 import LogoImage from "../../assets/imgs/logo.png"; // Ajuste o caminho conforme necessário
+import { useAuth } from "../../context/AuthContext";
 
 const StyledLink = styled(Link)`
   display: flex;
@@ -71,7 +72,6 @@ const MenuItem = styled.li`
     width: 60%; /* Ocupa todo o espaço disponível no mobile */
   }
 
-
   a {
     text-decoration: none;
     color: #333;
@@ -102,49 +102,105 @@ const MobileIcon = styled.div`
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const { isLoggedIn, logout } = useAuth(); // aqui vem do contexto
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
+  const toggleMenu2 = () => {
+    setIsOpen(false);
+  };
+
   return (
-    <NavbarContainer>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          textAlign: "center",
-          gap: "1rem",
-          justifyContent: "space-between",
-        }}
-      >
-        <StyledLink to="/">
-          <Logo>
-            <img src={LogoImage} alt="Logo" />
-          </Logo>
-        </StyledLink>
+    <div>
+      {isLoggedIn ? (
+        <NavbarContainer>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              textAlign: "center",
+              gap: "1rem",
+              justifyContent: "space-between",
+            }}
+          >
+            <StyledLink to="/">
+              <Logo>
+                <img src={LogoImage} alt="Logo" />
+              </Logo>
+            </StyledLink>
 
-        <MobileIcon onClick={toggleMenu}>
-          <FaBars />
-        </MobileIcon>
-      </div>
+            <MobileIcon onClick={toggleMenu}>
+              <FaBars />
+            </MobileIcon>
+          </div>
 
-      <Menu isOpen={isOpen}>
-        <MenuItem>
-          <StyledLink to="/Login" state={{ isRegister: false }}>
-            <FaUser />
-            Entrar
-          </StyledLink>
-        </MenuItem>
+          <Menu isOpen={isOpen}>
+            <MenuItem>
+              <StyledLink to="/Profile">Perfil</StyledLink>
+            </MenuItem>
 
-        <MenuItem>
-          <StyledLink to="/Login" state={{ isRegister: true }}>
-            <FaUser />
-            Cadastre-se
-          </StyledLink>
-        </MenuItem>
-      </Menu>
-    </NavbarContainer>
+            <MenuItem>
+              <StyledLink to="/Settings">Configurações</StyledLink>
+            </MenuItem>
+
+            <MenuItem>
+              <StyledLink to="/" onClick={logout}>
+                Sair
+              </StyledLink>
+            </MenuItem>
+          </Menu>
+        </NavbarContainer>
+
+      ) : (
+        <NavbarContainer>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              textAlign: "center",
+              gap: "1rem",
+              justifyContent: "space-between",
+            }}
+          >
+            <StyledLink to="/">
+              <Logo>
+                <img src={LogoImage} alt="Logo" />
+              </Logo>
+            </StyledLink>
+
+            <MobileIcon onClick={toggleMenu}>
+              <FaBars />
+            </MobileIcon>
+          </div>
+
+          <Menu isOpen={isOpen}>
+            <MenuItem>
+              <StyledLink
+                to="/Auth"
+                onClick={toggleMenu2}
+                state={{ isRegister: false }}
+              >
+                <FaUser />
+                Entrar
+              </StyledLink>
+            </MenuItem>
+
+            <MenuItem>
+              <StyledLink
+                to="/Auth"
+                onClick={toggleMenu2}
+                state={{ isRegister: true }}
+              >
+                <FaUser />
+                Cadastre-se
+              </StyledLink>
+            </MenuItem>
+          </Menu>
+        </NavbarContainer>
+      )}
+    </div>
   );
 };
 
