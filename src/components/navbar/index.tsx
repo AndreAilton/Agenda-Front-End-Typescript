@@ -138,7 +138,7 @@ const Navbar: React.FC = () => {
 
           <Menu isOpen={isOpen}>
             <MenuItem>
-              <StyledLink to="/Profile">Perfil</StyledLink>
+              <StyledLink to="/Perfil">Perfil</StyledLink>
             </MenuItem>
 
             <MenuItem>
