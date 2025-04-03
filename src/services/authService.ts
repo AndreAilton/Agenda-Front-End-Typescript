@@ -78,9 +78,11 @@ export const getUser = async (token: string): Promise<any> => {
       {
         headers: {
           Authorization: `Bearer ${token}`
-        }
+        },
+        timeout: 5000 // Timeout de 5 segundos
       }
     )
+
     return response.data.sucess;
   } catch (erro: any) { 
     // Se a API retornou uma mensagem de erro no JSON:

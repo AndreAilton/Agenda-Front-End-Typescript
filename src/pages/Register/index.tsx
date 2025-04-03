@@ -138,7 +138,6 @@ const LoginRegisterForm: React.FC = () => {
         setTimeout(() => {
           navigate("/");
         }, 3000);
-        
       } else {
         const response = await loginService({ email, password });
         auth.login(response.token); // Usando o contexto

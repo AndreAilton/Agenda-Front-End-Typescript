@@ -14,29 +14,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
 
-    try {
-      if (token) {
-        getUser(token)
-          .then((data) => {
-            if (data) {
-              setIsLoggedIn(true);
-            } else {
-              setIsLoggedIn(false);
-            }
-          })
-          .catch((error) => {
-            console.error("Erro ao buscar usuário:", error);
+     const verifyToken = async () => {
+        if (token) {
+          const response = await getUser(token);
+          if (response == false) {
+            console.log("Token inválido ou usuário não encontrado.");
             setIsLoggedIn(false);
-          });
+            return;
+
+          }
+          setIsLoggedIn(true);
+        } else {
+          console.log("Token não encontrado, usuário não autenticado.");
+          setIsLoggedIn(false);
+        } 
+  
       }
-    }
-    catch (error) {
-      console.error("Erro ao verificar token:", error);
-      setIsLoggedIn(false);
-    }
     
+    verifyToken()
   }, []);
 
   const login = (token: string) => {

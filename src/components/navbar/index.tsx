@@ -112,6 +112,10 @@ const Navbar: React.FC = () => {
     setIsOpen(false);
   };
 
+  if (isLoggedIn === undefined) {
+    return null; // Não renderiza nada enquanto o estado não é carregado
+  }
+  
   return (
     <div>
       {isLoggedIn ? (
