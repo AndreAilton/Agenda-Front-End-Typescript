@@ -217,12 +217,16 @@ const ToDoList: React.FC = () => {
     }
 
     try {
+      // Cria a tarefa e obtém os dados completos da API
       const createdTask = await createUserTask(token, newTask);
-      setTasks((prevTasks) => [...prevTasks, { ...createdTask, done: false }]);
+
+      // Atualiza o estado local com a tarefa criada
+      setTasks((prevTasks) => [...prevTasks, createdTask]);
+
+      // Fecha o modal e limpa os campos
       setIsModalOpen(false);
       setNewTask({ tittle: "", description: "", category: "" });
-      setFormErrors({ tittle: "", description: "", category: "" }); //
-      fetchTasks(); // Atualiza a lista de tarefas
+      setFormErrors({ tittle: "", description: "", category: "" });
     } catch (err: any) {
       setFormErrors({
         ...formErrors,
@@ -277,7 +281,10 @@ const ToDoList: React.FC = () => {
     }
 
     try {
+      // Atualiza apenas o campo "done" da tarefa
       await alterUserTask(token, taskId, { done: !done });
+
+      // Atualiza a lista de tarefas após a alteração
       const data = await getUserTasks(token);
       setTasks(data);
     } catch (err: any) {
@@ -348,7 +355,11 @@ const ToDoList: React.FC = () => {
       {/* Modal para criar nova tarefa */}
       {isModalOpen && (
         <ModalOverlay onClick={() => setIsModalOpen(false)}>
-          <ModalContent>
+          <ModalContent
+            onClick={(e) => {
+              e.stopPropagation(); // Previne o clique no conteúdo do modal de fechar o modal
+            }}
+          >
             <ModalTitle>Criar Nova Tarefa</ModalTitle>
             {formErrors.tittle && (
               <ErrorMessage>{formErrors.tittle}</ErrorMessage>
@@ -396,7 +407,11 @@ const ToDoList: React.FC = () => {
             setIsEditModalOpen(false); // Fecha o modal ao clicar no overlay
           }}
         >
-          <ModalContent>
+          <ModalContent
+            onClick={(e) => {
+              e.stopPropagation(); // Previne o clique no conteúdo do modal de fechar o modal
+            }}
+          >
             <ModalTitle>Editar Tarefa</ModalTitle>
             {formErrors.tittle && (
               <ErrorMessage>{formErrors.tittle}</ErrorMessage>

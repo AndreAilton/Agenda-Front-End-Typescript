@@ -86,27 +86,26 @@ export const createUserTask = async (
 export const alterUserTask = async (
   token: string,
   taskId: number,
-  taskData: {
+  taskData: Partial<{
     tittle: string;
     description: string;
     category: string;
     done: boolean;
-  }
+  }>
 ): Promise<void> => {
   try {
-    await axios.put(`http://192.168.0.108:3000/tarefas/${taskId}`, taskData, 
-      {
+    await axios.put(`http://192.168.0.108:3000/tarefas/${taskId}`, taskData, {
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
     });
-    console.log(`Tarefa ${taskId} excluída com sucesso.`);
+    console.log(`Tarefa ${taskId} atualizada com sucesso.`);
   } catch (erro: any) {
-    // Se a API retornou uma mensagem de erro no JSON:
     console.log(erro);
     if (erro.response && erro.response.data) {
       throw new Error(erro.response.data.errors); // Propaga a mensagem para o componente
     }
-    throw new Error("Erro ao excluir a tarefa. Tente novamente mais tarde.");
+    throw new Error("Erro ao atualizar a tarefa. Tente novamente mais tarde.");
   }
 };
