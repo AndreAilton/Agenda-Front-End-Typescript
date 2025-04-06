@@ -10,7 +10,7 @@ export const getUser = async (token: string): Promise<any> => {
     return response.data;
   } catch (erro: any) {
     // Se a API retornou uma mensagem de erro no JSON:
-    console.log(erro);
+
     if (erro.response.data) {
       throw new Error(erro.response.data.errors); // propaga a mensagem para o componente
     }
@@ -28,7 +28,7 @@ export const getUserTasks = async (token: string): Promise<any> => {
     return response.data;
   } catch (erro: any) {
     // Se a API retornou uma mensagem de erro no JSON:
-    console.log(erro);
+
     if (erro.response.data) {
       throw new Error(erro.response.data.errors); // propaga a mensagem para o componente
     }
@@ -46,10 +46,9 @@ export const deleteUserTask = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(`Tarefa ${taskId} excluída com sucesso.`);
   } catch (erro: any) {
     // Se a API retornou uma mensagem de erro no JSON:
-    console.log(erro);
+
     if (erro.response && erro.response.data) {
       throw new Error(erro.response.data.errors); // Propaga a mensagem para o componente
     }
@@ -62,20 +61,15 @@ export const createUserTask = async (
   taskData: { tittle: string; description: string; category: string }
 ): Promise<void> => {
   try {
-    const response = await axios.post(
-      "http://192.168.0.108:3000/tarefas",
-      taskData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    console.log("Tarefa criada com sucesso:", response.data);
+    await axios.post("http://192.168.0.108:3000/tarefas", taskData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
   } catch (erro: any) {
     // Se a API retornou uma mensagem de erro no JSON:
-    console.log(erro);
+
     if (erro.response && erro.response.data) {
       throw new Error(erro.response.data.errors); // Propaga a mensagem para o componente
     }
@@ -100,12 +94,82 @@ export const alterUserTask = async (
         "Content-Type": "application/json",
       },
     });
-    console.log(`Tarefa ${taskId} atualizada com sucesso.`);
   } catch (erro: any) {
-    console.log(erro);
     if (erro.response && erro.response.data) {
       throw new Error(erro.response.data.errors); // Propaga a mensagem para o componente
     }
     throw new Error("Erro ao atualizar a tarefa. Tente novamente mais tarde.");
+  }
+};
+
+interface UserCategory {
+  id: number;
+  category: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const getUserCategorys = async (token: string): Promise<any[]> => {
+  try {
+    const response = await axios.get("http://192.168.0.108:3000/categorias", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const categories = response.data.categorias as UserCategory[];
+    return categories.map((category) => ({
+      id: category.id,
+      category: category.category,
+    }));
+
+  } catch (erro: any) {
+    // Verifica se a API retornou uma mensagem de erro no JSON
+    if (erro.response && erro.response.data) {
+      throw new Error(erro.response.data.errors || "Erro ao buscar categorias.");
+    }
+    throw new Error("Erro ao buscar categorias. Tente novamente mais tarde.");
+  }
+};
+
+export const createUserCategory = async (
+  token: string,
+  categoryData: { category: string }
+): Promise<void> => {
+  try {
+    await axios.post("http://192.168.0.108:3000/categorias", categoryData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (erro: any) {
+    // Se a API retornou uma mensagem de erro no JSON:
+
+    if (erro.response && erro.response.data) {
+      throw new Error(erro.response.data.errors); // Propaga a mensagem para o componente
+    }
+    throw new Error("Erro ao criar a Categoria.");
+  }
+};
+
+
+export const deleteUserCategory = async (
+  token: string,
+  CategoryId: number
+): Promise<void> => {
+  try {
+    await axios.delete(`http://192.168.0.108:3000/categorias/${CategoryId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (erro: any) {
+    // Se a API retornou uma mensagem de erro no JSON:
+
+    if (erro.response && erro.response.data) {
+      throw new Error(erro.response.data.errors); // Propaga a mensagem para o componente
+    }
+    throw new Error("Erro ao excluir a tarefa. Tente novamente mais tarde.");
   }
 };
