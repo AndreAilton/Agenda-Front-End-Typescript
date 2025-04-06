@@ -188,6 +188,7 @@ const ToDoList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [newTask, setNewTask] = useState({
+    
     tittle: "",
     description: "",
     category: "",
@@ -203,7 +204,12 @@ const ToDoList: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState<string>(""); // Categoria selecionada
   const [sortOrder, setSortOrder] = useState<string>("asc"); // Ordem de exibição (ascendente ou descendente)
 
-  const [categories, setCategories] = useState<string[]>([]); // Lista de categorias
+  interface Category {
+    id: number;
+    category: string;
+  }
+
+  const [categories, setCategories] = useState<Category[]>([]); // Lista de categorias
   const [newCategory, setNewCategory] = useState(""); // Nova categoria
   const [isManageCategoriesModalOpen, setIsManageCategoriesModalOpen] =
     useState(false);
