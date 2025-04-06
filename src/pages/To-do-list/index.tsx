@@ -41,7 +41,7 @@ const TaskList = styled.ul`
   margin: 0;
 `;
 
-const TaskItem = styled.li<{ done: boolean }>`
+const TaskItem = styled.li<{ $done: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -49,12 +49,12 @@ const TaskItem = styled.li<{ done: boolean }>`
   margin-bottom: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  background: ${({ done }) => (done ? "#d4edda" : "#f9f9f9")};
-  color: ${({ done }) => (done ? "#155724" : "#333")};
+  background: ${({ $done }) => ($done ? "#d4edda" : "#f9f9f9")};
+  color: ${({ $done }) => ($done ? "#155724" : "#333")};
   transition: background 0.3s;
 
   &:hover {
-    background: ${({ done }) => (done ? "#c3e6cb" : "#e9ecef")};
+    background: ${({ $done }) => ($done ? "#c3e6cb" : "#e9ecef")};
   }
 `;
 
@@ -63,10 +63,10 @@ const TaskDetails = styled.div`
   flex-direction: column;
 `;
 
-const TaskTitle = styled.h3<{ done: boolean }>`
+const TaskTitle = styled.h3<{ $done: boolean }>`
   margin: 0;
   font-size: 1.2rem;
-  text-decoration: ${({ done }) => (done ? "line-through" : "none")};
+  text-decoration: ${({ $done }) => ($done ? "line-through" : "none")};
 `;
 
 const TaskDescription = styled.p`
@@ -188,7 +188,6 @@ const ToDoList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [newTask, setNewTask] = useState({
-    
     tittle: "",
     description: "",
     category: "",
@@ -225,7 +224,14 @@ const ToDoList: React.FC = () => {
 
     try {
       const data = await getUserTasks(token);
-      setTasks(data);
+
+      // Garante que cada tarefa tenha o campo `done` inicializado
+      const tasksWithDone = data.map((task: any) => ({
+        ...task,
+        done: task.done ?? false, // Define `done` como `false` se estiver `undefined`
+      }));
+
+      setTasks(tasksWithDone);
     } catch (err: any) {
       setError(err.message || "Erro ao carregar as tarefas.");
     } finally {
@@ -274,7 +280,7 @@ const ToDoList: React.FC = () => {
 
     try {
       // Cria a tarefa e obtém os dados completos da API
-       await createUserTask(token, newTask);
+      await createUserTask(token, newTask);
       // Atualiza o estado local com a nova tarefa
       fetchTasks(); // Recarrega as tarefas após a criação
 
@@ -336,12 +342,15 @@ const ToDoList: React.FC = () => {
     }
 
     try {
-      // Atualiza apenas o campo "done" da tarefa
+      // Atualiza apenas o campo `done` da tarefa
       await alterUserTask(token, taskId, { done: !done });
 
-      // Atualiza a lista de tarefas após a alteração
-      const data = await getUserTasks(token);
-      setTasks(data);
+      // Atualiza a lista de tarefas no estado local
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === taskId ? { ...task, done: !done } : task
+        )
+      );
     } catch (err: any) {
       setError(err.message || "Erro ao atualizar o status da tarefa.");
     }
@@ -469,7 +478,14 @@ const ToDoList: React.FC = () => {
           </Select>
         </div>
 
-        <Button onClick={() => {setIsModalOpen(true); fetchCategories()}}>Criar Nova Tarefa</Button>
+        <Button
+          onClick={() => {
+            setIsModalOpen(true);
+            fetchCategories();
+          }}
+        >
+          Criar Nova Tarefa
+        </Button>
         <Button
           onClick={() => {
             setIsManageCategoriesModalOpen(true);
@@ -483,15 +499,11 @@ const ToDoList: React.FC = () => {
             {filteredAndSortedTasks.map((task) => (
               <TaskItem
                 key={task.id}
-                done={task.done}
-                onDoubleClick={() => {
-                  setEditTask(task);
-                  setIsEditModalOpen(true);
-                }}
-                onClick={() => toggleTaskDone(task.id, task.done)}
+                $done={!!task.done} // Converte para booleano explicitamente
+                onDoubleClick={() => toggleTaskDone(task.id, task.done)} // Evento de duplo clique
               >
                 <TaskDetails>
-                  <TaskTitle done={task.done}>{task.tittle}</TaskTitle>
+                  <TaskTitle $done={!!task.done}>{task.tittle}</TaskTitle>
                   <TaskDescription>{task.description}</TaskDescription>
                   <TaskCategory>{task.category}</TaskCategory>
                   <TaskDate>
@@ -636,7 +648,9 @@ const ToDoList: React.FC = () => {
               {categories.map((category) => (
                 <CategoryItem key={category.id}>
                   <span>{category.category}</span>
-                  <DeleteButton onClick={() => handleDeleteCategory(category.id)}>
+                  <DeleteButton
+                    onClick={() => handleDeleteCategory(category.id)}
+                  >
                     Excluir
                   </DeleteButton>
                 </CategoryItem>

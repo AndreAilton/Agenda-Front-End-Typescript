@@ -49,7 +49,7 @@ const Logo = styled.div`
   }
 `;
 
-const Menu = styled.ul<{ isOpen: boolean }>`
+const Menu = styled.ul<{ $isOpen: boolean }>`
   display: flex;
   list-style: none;
   gap: 1rem;
@@ -60,8 +60,8 @@ const Menu = styled.ul<{ isOpen: boolean }>`
     flex-direction: column;
     gap: 0.5rem;
     margin-top: 1rem;
-    display: ${({ isOpen }) =>
-      isOpen ? "flex" : "none"}; /* Mostra ou oculta o menu */
+    display: ${({ $isOpen }) =>
+      $isOpen ? "flex" : "none"}; /* Mostra ou oculta o menu */
   }
 `;
 
@@ -101,11 +101,11 @@ const MobileIcon = styled.div`
 `;
 
 const Navbar: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [$isOpen, setIsOpen] = React.useState(false);
   const { isLoggedIn, logout } = useAuth(); // aqui vem do contexto
 
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
+    setIsOpen(!$isOpen);
   };
 
   const toggleMenu2 = () => {
@@ -140,7 +140,7 @@ const Navbar: React.FC = () => {
             </MobileIcon>
           </div>
 
-          <Menu isOpen={isOpen}>
+          <Menu $isOpen={$isOpen}>
             <MenuItem>
               <StyledLink to="/Perfil">Perfil</StyledLink>
             </MenuItem>
@@ -179,7 +179,7 @@ const Navbar: React.FC = () => {
             </MobileIcon>
           </div>
 
-          <Menu isOpen={isOpen}>
+          <Menu $isOpen={$isOpen}>
             <MenuItem>
               <StyledLink
                 to="/Auth"
