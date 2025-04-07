@@ -202,6 +202,7 @@ const ToDoList: React.FC = () => {
   // Estados para filtros
   const [filterCategory, setFilterCategory] = useState<string>(""); // Categoria selecionada
   const [sortOrder, setSortOrder] = useState<string>("asc"); // Ordem de exibição (ascendente ou descendente)
+  const [filterStatus, setFilterStatus] = useState<string>("all"); // Filtro de status: "all", "done", "inProgress"
 
   interface Category {
     id: number;
@@ -416,7 +417,19 @@ const ToDoList: React.FC = () => {
   const filteredAndSortedTasks = tasks
     .filter((task) => {
       // Filtra por categoria, se uma categoria for selecionada
-      return filterCategory ? task.category === filterCategory : true;
+      const matchesCategory = filterCategory
+        ? task.category === filterCategory
+        : true;
+
+      // Filtra por status (concluído ou em andamento)
+      const matchesStatus =
+        filterStatus === "all"
+          ? true
+          : filterStatus === "done"
+          ? task.done
+          : !task.done;
+
+      return matchesCategory && matchesStatus;
     })
     .sort((a, b) => {
       // Ordena por data de criação (ascendente ou descendente)
@@ -468,6 +481,16 @@ const ToDoList: React.FC = () => {
             )}
           </Select>
 
+          {/* Filtro por Status */}
+          <Select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="all">Todas</option>
+            <option value="done">Concluídas</option>
+            <option value="inProgress">Em Andamento</option>
+          </Select>
+
           {/* Filtro por Ordem */}
           <Select
             value={sortOrder}
@@ -500,7 +523,11 @@ const ToDoList: React.FC = () => {
               <TaskItem
                 key={task.id}
                 $done={!!task.done} // Converte para booleano explicitamente
-                onDoubleClick={() => toggleTaskDone(task.id, task.done)} // Evento de duplo clique
+                onClick={() => toggleTaskDone(task.id, task.done)}
+                onDoubleClick={() => {
+                  setEditTask(task); // Define a tarefa a ser editada
+                  setIsEditModalOpen(true); // Abre o modal de edição
+                }} // Evento de duplo clique
               >
                 <TaskDetails>
                   <TaskTitle $done={!!task.done}>{task.tittle}</TaskTitle>
@@ -615,14 +642,19 @@ const ToDoList: React.FC = () => {
             {formErrors.category && (
               <ErrorMessage>{formErrors.category}</ErrorMessage>
             )}
-            <Input
-              type="text"
-              placeholder="Categoria"
+            <Select
               value={editTask.category}
               onChange={(e) =>
                 setEditTask({ ...editTask, category: e.target.value })
               }
-            />
+            >
+              <option value="">Selecione uma Categoria</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.category}>
+                  {category.category}
+                </option>
+              ))}
+            </Select>
             <Button onClick={handleEditTask}>Salvar</Button>
             <Button onClick={() => setIsEditModalOpen(false)}>Cancelar</Button>
           </ModalContent>

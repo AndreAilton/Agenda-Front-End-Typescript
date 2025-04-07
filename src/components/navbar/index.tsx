@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { FaBars, FaUser } from "react-icons/fa";
 import LogoImage from "../../assets/imgs/logo.png"; // Ajuste o caminho conforme necessário
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const StyledLink = styled(Link)`
   display: flex;
@@ -103,7 +104,7 @@ const MobileIcon = styled.div`
 const Navbar: React.FC = () => {
   const [$isOpen, setIsOpen] = React.useState(false);
   const { isLoggedIn, logout } = useAuth(); // aqui vem do contexto
-
+  const navigate = useNavigate();
   const toggleMenu = () => {
     setIsOpen(!$isOpen);
   };
@@ -146,11 +147,8 @@ const Navbar: React.FC = () => {
             </MenuItem>
 
             <MenuItem>
-              <StyledLink to="/Settings">Configurações</StyledLink>
-            </MenuItem>
-
-            <MenuItem>
-              <StyledLink to="/" onClick={logout}>
+              <StyledLink to="/" onClick={() => {navigate("/Auth"),logout();}}>
+                <FaUser />
                 Sair
               </StyledLink>
             </MenuItem>
