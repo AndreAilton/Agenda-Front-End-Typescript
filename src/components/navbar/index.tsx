@@ -147,7 +147,7 @@ const Navbar: React.FC = () => {
             </MenuItem>
 
             <MenuItem>
-              <StyledLink to="/" onClick={() => {navigate("/Auth"),logout();}}>
+              <StyledLink to="/" onClick={() => {navigate("/"),logout();}}>
                 <FaUser />
                 Sair
               </StyledLink>

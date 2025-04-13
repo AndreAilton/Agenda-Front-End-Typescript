@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
@@ -132,16 +132,6 @@ const Footer = styled.footer`
 `;
 
 const LandingPage: React.FC = () => {
-  const navigate = useNavigate();
-
-  const handleGetStarted = () => {
-    navigate("/Auth"); // Redireciona para a página de autenticação
-  };
-
-  const handleRegister = () => {
-    navigate("/auth"); // Redireciona para a página de cadastro
-  };
-
   return (
     <Container>
       <Header>
@@ -164,7 +154,11 @@ const LandingPage: React.FC = () => {
           <FeatureItem>Gerenciamento de categorias personalizadas</FeatureItem>
           <FeatureItem>Interface intuitiva e responsiva</FeatureItem>
         </FeaturesList>
-        <Button style={{backgroundColor:"#28a745"}} onClick={handleRegister}>Cadastrar-se</Button>
+        <Button >
+          <Link to="/Auth" style={{ textDecoration: 'none', color: '#fff' } } state={{ isRegister: true }}>
+            Cadastrar-se
+          </Link>
+        </Button>
       </FeaturesSection>
 
       <DashboardSection>
@@ -178,8 +172,11 @@ const LandingPage: React.FC = () => {
           <FeatureItem>Gerencie suas categorias personalizadas</FeatureItem>
         </FeaturesList>
         <ButtonContainer>
-          <Button onClick={handleGetStarted}>Acessar o Dashboard</Button>
-          
+        <Button >
+          <Link to="/Auth" style={{ textDecoration: 'none', color: '#fff' } }>
+            Acessar Dashboard
+          </Link>
+        </Button>
         </ButtonContainer>
       </DashboardSection>
 

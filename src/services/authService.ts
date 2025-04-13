@@ -1,6 +1,9 @@
 // src/services/authUser.ts
 import axios from "axios";
 
+
+const BASE_URL = "https://andreailtondev.tech/api-agenda";
+
 export interface NovoUsuario {
   name: string;
   email: string;
@@ -36,20 +39,17 @@ interface RespostaLogin {
 export const login = async (usuario: usuario): Promise<RespostaLogin> => {
   try {
     const response = await axios.post<RespostaLogin>(
-      "http://192.168.0.108:3000/token",
-      usuario // Timeout de 5 segundos
+      `${BASE_URL}/token`,
+      usuario
     );
 
     return response.data;
   } catch (erro: any) {
-    // Se há uma resposta do servidor
     if (erro.response && erro.response.data) {
       throw new Error(
         erro.response.data.error || "Erro desconhecido do servidor"
       );
     }
-
-    // Caso contrário, erro genérico
     throw new Error("Erro ao fazer login. Tente novamente mais tarde.");
   }
 };
@@ -57,40 +57,35 @@ export const login = async (usuario: usuario): Promise<RespostaLogin> => {
 export const register = async (usuario: NovoUsuario): Promise<RespostaApi> => {
   try {
     const response = await axios.post<RespostaApi>(
-      "http://192.168.0.108:3000/users",
+      `${BASE_URL}/users`,
       usuario
     );
     console.log(response.data.user);
     return response.data;
   } catch (erro: any) {
-    // Se a API retornou uma mensagem de erro no JSON:
     console.log(erro);
     if (erro.response.data) {
-      throw new Error(erro.response.data.errors); // propaga a mensagem para o componente
+      throw new Error(erro.response.data.errors);
     }
     throw new Error("Erro ao registrar usuário. Tente novamente mais tarde.");
   }
 };
 
-export const getUser = async (token: string): Promise<any> => { 
+export const getUser = async (token: string): Promise<any> => {
   try {
-    const response = await axios.get("http://192.168.0.108:3000/users",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        timeout: 5000 // Timeout de 5 segundos
-      }
-    )
+    const response = await axios.get(`${BASE_URL}/users`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: 5000,
+    });
 
     return response.data.sucess;
-  } catch (erro: any) { 
-    // Se a API retornou uma mensagem de erro no JSON:
+  } catch (erro: any) {
     console.log(erro);
     if (erro.response.data) {
-      throw new Error(erro.response.data.errors); // propaga a mensagem para o componente
+      throw new Error(erro.response.data.errors);
     }
     throw new Error("Erro ao registrar usuário. Tente novamente mais tarde.");
   }
-
-}
+};

@@ -1,18 +1,19 @@
 import axios from "axios";
 
+
+const BASE_URL = "https://andreailtondev.tech/api-agenda";
+
 export const getUser = async (token: string): Promise<any> => {
   try {
-    const response = await axios.get("http://192.168.0.108:3000/users", {
+    const response = await axios.get(`${BASE_URL}/users`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (erro: any) {
-    // Se a API retornou uma mensagem de erro no JSON:
-
     if (erro.response.data) {
-      throw new Error(erro.response.data.errors); // propaga a mensagem para o componente
+      throw new Error(erro.response.data.errors);
     }
     throw new Error("Erro ao registrar usuário. Tente novamente mais tarde.");
   }
@@ -20,17 +21,15 @@ export const getUser = async (token: string): Promise<any> => {
 
 export const getUserTasks = async (token: string): Promise<any> => {
   try {
-    const response = await axios.get("http://192.168.0.108:3000/tarefas", {
+    const response = await axios.get(`${BASE_URL}/tarefas`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (erro: any) {
-    // Se a API retornou uma mensagem de erro no JSON:
-
     if (erro.response.data) {
-      throw new Error(erro.response.data.errors); // propaga a mensagem para o componente
+      throw new Error(erro.response.data.errors);
     }
     throw new Error("Erro ao registrar usuário. Tente novamente mais tarde.");
   }
@@ -41,16 +40,14 @@ export const deleteUserTask = async (
   taskId: number
 ): Promise<void> => {
   try {
-    await axios.delete(`http://192.168.0.108:3000/tarefas/${taskId}`, {
+    await axios.delete(`${BASE_URL}/tarefas/${taskId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
   } catch (erro: any) {
-    // Se a API retornou uma mensagem de erro no JSON:
-
     if (erro.response && erro.response.data) {
-      throw new Error(erro.response.data.errors); // Propaga a mensagem para o componente
+      throw new Error(erro.response.data.errors);
     }
     throw new Error("Erro ao excluir a tarefa. Tente novamente mais tarde.");
   }
@@ -61,17 +58,15 @@ export const createUserTask = async (
   taskData: { tittle: string; description: string; category: string }
 ): Promise<void> => {
   try {
-    await axios.post("http://192.168.0.108:3000/tarefas", taskData, {
+    await axios.post(`${BASE_URL}/tarefas`, taskData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
   } catch (erro: any) {
-    // Se a API retornou uma mensagem de erro no JSON:
-
     if (erro.response && erro.response.data) {
-      throw new Error(erro.response.data.errors); // Propaga a mensagem para o componente
+      throw new Error(erro.response.data.errors);
     }
     throw new Error("Erro ao criar a tarefa. Tente novamente mais tarde.");
   }
@@ -88,7 +83,7 @@ export const alterUserTask = async (
   }>
 ): Promise<void> => {
   try {
-    await axios.put(`http://192.168.0.108:3000/tarefas/${taskId}`, taskData, {
+    await axios.put(`${BASE_URL}/tarefas/${taskId}`, taskData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -96,7 +91,7 @@ export const alterUserTask = async (
     });
   } catch (erro: any) {
     if (erro.response && erro.response.data) {
-      throw new Error(erro.response.data.errors); // Propaga a mensagem para o componente
+      throw new Error(erro.response.data.errors);
     }
     throw new Error("Erro ao atualizar a tarefa. Tente novamente mais tarde.");
   }
@@ -111,7 +106,7 @@ interface UserCategory {
 
 export const getUserCategorys = async (token: string): Promise<any[]> => {
   try {
-    const response = await axios.get("http://192.168.0.108:3000/categorias", {
+    const response = await axios.get(`${BASE_URL}/categorias`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -122,11 +117,11 @@ export const getUserCategorys = async (token: string): Promise<any[]> => {
       id: category.id,
       category: category.category,
     }));
-
   } catch (erro: any) {
-    // Verifica se a API retornou uma mensagem de erro no JSON
     if (erro.response && erro.response.data) {
-      throw new Error(erro.response.data.errors || "Erro ao buscar categorias.");
+      throw new Error(
+        erro.response.data.errors || "Erro ao buscar categorias."
+      );
     }
     throw new Error("Erro ao buscar categorias. Tente novamente mais tarde.");
   }
@@ -137,38 +132,33 @@ export const createUserCategory = async (
   categoryData: { category: string }
 ): Promise<void> => {
   try {
-    await axios.post("http://192.168.0.108:3000/categorias", categoryData, {
+    await axios.post(`${BASE_URL}/categorias`, categoryData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
   } catch (erro: any) {
-    // Se a API retornou uma mensagem de erro no JSON:
-
     if (erro.response && erro.response.data) {
-      throw new Error(erro.response.data.errors); // Propaga a mensagem para o componente
+      throw new Error(erro.response.data.errors);
     }
     throw new Error("Erro ao criar a Categoria.");
   }
 };
-
 
 export const deleteUserCategory = async (
   token: string,
   CategoryId: number
 ): Promise<void> => {
   try {
-    await axios.delete(`http://192.168.0.108:3000/categorias/${CategoryId}`, {
+    await axios.delete(`${BASE_URL}/categorias/${CategoryId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
   } catch (erro: any) {
-    // Se a API retornou uma mensagem de erro no JSON:
-
     if (erro.response && erro.response.data) {
-      throw new Error(erro.response.data.errors); // Propaga a mensagem para o componente
+      throw new Error(erro.response.data.errors);
     }
     throw new Error("Erro ao excluir a tarefa. Tente novamente mais tarde.");
   }
