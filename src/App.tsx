@@ -8,15 +8,13 @@ import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
-    <BrowserRouter>
-    <AuthProvider>
-      
+    <BrowserRouter basename="/Agenda">
+      <AuthProvider>
         <Navbar />
         <Suspense fallback={<Loading />}>
           <AppRoutes />
         </Suspense>
-      
-    </AuthProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
