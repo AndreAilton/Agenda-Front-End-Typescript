@@ -8,7 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
-    <BrowserRouter basename="/Agenda">
+    <BrowserRouter basename="/agenda">
       <AuthProvider>
         <Navbar />
         <Suspense fallback={<Loading />}>

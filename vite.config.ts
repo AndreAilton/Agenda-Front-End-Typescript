@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/Agenda/', // 👈 importante!
+  base: '/agenda/', // 👈 importante!
     server: {
     allowedHosts: ['andreailtondev.tech'], // libera seu domínio
     host: true, // aceita conexões externas
