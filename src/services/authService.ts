@@ -2,7 +2,7 @@
 import axios from "axios";
 
 
-const BASE_URL = "https://andreailtondev.tech/api-agenda";
+const BASE_URL = "http://localhost:3000";
 
 export interface NovoUsuario {
   name: string;

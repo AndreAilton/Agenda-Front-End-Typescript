@@ -15,7 +15,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: #f5f5f5;
-  padding: 2rem 1rem; /* Adiciona espaçamento ao redor */
+  padding: 2rem 1rem;
 `;
 
 const ListWrapper = styled.div`
@@ -25,12 +25,49 @@ const ListWrapper = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 600px;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const Title = styled.h2`
   text-align: center;
   margin-bottom: 1.5rem;
   color: #333;
+`;
+
+const FiltersWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  select {
+    flex: 1;
+    min-width: 0;
+  }
+`;
+
+const ButtonsWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  button {
+    flex: 1;
+    min-width: 120px;
+
+    @media (max-width: 480px) {
+      flex: 1 1 100%;
+    }
+  }
 `;
 
 const TaskListWrapper = styled.div``;
@@ -43,8 +80,8 @@ const TaskList = styled.ul`
 
 const TaskItem = styled.li<{ $done: boolean }>`
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
   padding: 1rem;
   margin-bottom: 1rem;
   border: 1px solid #ccc;
@@ -56,11 +93,18 @@ const TaskItem = styled.li<{ $done: boolean }>`
   &:hover {
     background: ${({ $done }) => ($done ? "#c3e6cb" : "#e9ecef")};
   }
+
+  @media (min-width: 480px) {
+    flex-direction: row;
+    align-items: center;
+  }
 `;
 
 const TaskDetails = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1;
+  word-break: break-word;
 `;
 
 const TaskTitle = styled.h3<{ $done: boolean }>`
@@ -90,8 +134,6 @@ const Button = styled.button`
   background: #007bff;
   color: #fff;
   border: none;
-  margin-bottom: 1rem;
-  margin-right: 1rem;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   font-size: 0.9rem;
@@ -100,6 +142,14 @@ const Button = styled.button`
 
   &:hover {
     background: #0056b3;
+  }
+`;
+
+const DeleteButton = styled(Button)`
+  background: #dc3545;
+
+  &:hover {
+    background: #c82333;
   }
 `;
 
@@ -122,6 +172,14 @@ const ModalContent = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+    max-width: 90%;
+  }
 `;
 
 const ModalTitle = styled.h3`
@@ -148,6 +206,7 @@ const Select = styled.select`
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 0.9rem;
+  margin-bottom: 1rem;
 `;
 
 const CategoryList = styled.ul`
@@ -173,14 +232,6 @@ const CategoryItem = styled.li`
   }
 `;
 
-const DeleteButton = styled(Button)`
-  background: #dc3545;
-
-  &:hover {
-    background: #c82333;
-  }
-`;
-
 const ToDoList: React.FC = () => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -199,22 +250,20 @@ const ToDoList: React.FC = () => {
     category: "",
   });
 
-  // Estados para filtros
-  const [filterCategory, setFilterCategory] = useState<string>(""); // Categoria selecionada
-  const [sortOrder, setSortOrder] = useState<string>("asc"); // Ordem de exibição (ascendente ou descendente)
-  const [filterStatus, setFilterStatus] = useState<string>("all"); // Filtro de status: "all", "done", "inProgress"
+  const [filterCategory, setFilterCategory] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<string>("asc");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
 
   interface Category {
     id: number;
     category: string;
   }
 
-  const [categories, setCategories] = useState<Category[]>([]); // Lista de categorias
-  const [newCategory, setNewCategory] = useState(""); // Nova categoria
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [newCategory, setNewCategory] = useState("");
   const [isManageCategoriesModalOpen, setIsManageCategoriesModalOpen] =
     useState(false);
 
-  // Função para buscar as tarefas do usuário
   const fetchTasks = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -225,13 +274,10 @@ const ToDoList: React.FC = () => {
 
     try {
       const data = await getUserTasks(token);
-
-      // Garante que cada tarefa tenha o campo `done` inicializado
       const tasksWithDone = data.map((task: any) => ({
         ...task,
-        done: task.done ?? false, // Define `done` como `false` se estiver `undefined`
+        done: task.done ?? false,
       }));
-
       setTasks(tasksWithDone);
     } catch (err: any) {
       setError(err.message || "Erro ao carregar as tarefas.");
@@ -240,13 +286,9 @@ const ToDoList: React.FC = () => {
     }
   };
 
-  // Função para excluir uma tarefa
   const handleDeleteTask = async (taskId: number) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Usuário não autenticado.");
-      return;
-    }
+    if (!token) return setError("Usuário não autenticado.");
 
     try {
       await deleteUserTask(token, taskId);
@@ -257,96 +299,12 @@ const ToDoList: React.FC = () => {
     }
   };
 
-  // Função para criar uma nova tarefa
-  const handleCreateTask = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Usuário não autenticado.");
-      return;
-    }
-
-    // Validação dos campos
-    const errors = {
-      tittle: newTask.tittle ? "" : "O título é obrigatório.",
-      description: newTask.description ? "" : "A descrição é obrigatória.",
-      category: newTask.category ? "" : "A categoria é obrigatória.",
-    };
-
-    setFormErrors(errors);
-
-    // Verifica se há erros antes de enviar
-    if (Object.values(errors).some((error) => error !== "")) {
-      return;
-    }
-
-    try {
-      // Cria a tarefa e obtém os dados completos da API
-      await createUserTask(token, newTask);
-      // Atualiza o estado local com a nova tarefa
-      fetchTasks(); // Recarrega as tarefas após a criação
-
-      // Fecha o modal e limpa os campos
-      setIsModalOpen(false);
-      setNewTask({ tittle: "", description: "", category: "" });
-      setFormErrors({ tittle: "", description: "", category: "" });
-    } catch (err: any) {
-      setFormErrors({
-        ...formErrors,
-        tittle: err.response?.data?.message || "Erro ao criar a tarefa.",
-      });
-    }
-  };
-
-  // Função para alterar uma tarefa
-  const handleEditTask = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Usuário não autenticado.");
-      return;
-    }
-
-    // Validação dos campos
-    const errors = {
-      tittle: editTask.tittle ? "" : "O título é obrigatório.",
-      description: editTask.description ? "" : "A descrição é obrigatória.",
-      category: editTask.category ? "" : "A categoria é obrigatória.",
-    };
-
-    setFormErrors(errors);
-
-    // Verifica se há erros antes de enviar
-    if (Object.values(errors).some((error) => error !== "")) {
-      return;
-    }
-
-    try {
-      await alterUserTask(token, editTask.id, editTask);
-      const data = await getUserTasks(token);
-      setTasks(data);
-      setIsEditModalOpen(false);
-      setEditTask(null);
-      setFormErrors({ tittle: "", description: "", category: "" }); // Limpa os erros do formulário
-    } catch (err: any) {
-      setFormErrors({
-        ...formErrors,
-        tittle: err.response?.data?.message || "Erro ao alterar a tarefa.",
-      });
-    }
-  };
-
-  // Função para alternar o status de "concluído" de uma tarefa
   const toggleTaskDone = async (taskId: number, done: boolean) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Usuário não autenticado.");
-      return;
-    }
+    if (!token) return setError("Usuário não autenticado.");
 
     try {
-      // Atualiza apenas o campo `done` da tarefa
       await alterUserTask(token, taskId, { done: !done });
-
-      // Atualiza a lista de tarefas no estado local
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
           task.id === taskId ? { ...task, done: !done } : task
@@ -359,51 +317,23 @@ const ToDoList: React.FC = () => {
 
   const fetchCategories = async () => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Usuário não autenticado.");
-      return;
-    }
+    if (!token) return setError("Usuário não autenticado.");
 
     try {
       const data = await getUserCategorys(token);
-
       setCategories(data);
     } catch (err: any) {
       setError(err.message || "Erro ao carregar as categorias.");
     }
   };
 
-  const handleCreateCategory = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Usuário não autenticado.");
-      return;
-    }
-
-    if (!newCategory.trim()) {
-      setError("O nome da categoria não pode estar vazio.");
-      return;
-    }
-
-    try {
-      await createUserCategory(token, { category: newCategory });
-      setNewCategory("");
-      fetchCategories(); // Atualiza a lista de categorias
-    } catch (err: any) {
-      setError(err.message || "Erro ao criar a categoria.");
-    }
-  };
-
   const handleDeleteCategory = async (categoryId: number) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Usuário não autenticado.");
-      return;
-    }
+    if (!token) return setError("Usuário não autenticado.");
 
     try {
       await deleteUserCategory(token, categoryId);
-      fetchCategories(); // Atualiza a lista de categorias após a exclusão
+      fetchCategories();
     } catch (err: any) {
       setError(err.message || "Erro ao excluir a categoria.");
     }
@@ -413,15 +343,12 @@ const ToDoList: React.FC = () => {
     fetchTasks();
   }, []);
 
-  // Filtrar e ordenar as tarefas
   const filteredAndSortedTasks = tasks
     .filter((task) => {
-      // Filtra por categoria, se uma categoria for selecionada
       const matchesCategory = filterCategory
         ? task.category === filterCategory
         : true;
 
-      // Filtra por status (concluído ou em andamento)
       const matchesStatus =
         filterStatus === "all"
           ? true
@@ -431,42 +358,21 @@ const ToDoList: React.FC = () => {
 
       return matchesCategory && matchesStatus;
     })
-    .sort((a, b) => {
-      // Ordena por data de criação (ascendente ou descendente)
-      if (sortOrder === "asc") {
-        return (
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
-      } else if (sortOrder === "desc") {
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      }
-      return 0;
-    });
+    .sort((a, b) =>
+      sortOrder === "asc"
+        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
 
-  if (loading) {
-    return <Container>Carregando tarefas...</Container>;
-  }
-
-  if (error) {
-    return <Container>{error}</Container>;
-  }
+  if (loading) return <Container>Carregando tarefas...</Container>;
+  if (error) return <Container>{error}</Container>;
 
   return (
     <Container>
       <ListWrapper>
         <Title>Minha To-Do List</Title>
 
-        {/* Filtros */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginBottom: "1rem",
-          }}
-        >
-          {/* Filtro por Categoria */}
+        <FiltersWrapper>
           <Select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
@@ -481,7 +387,6 @@ const ToDoList: React.FC = () => {
             )}
           </Select>
 
-          {/* Filtro por Status */}
           <Select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -491,7 +396,6 @@ const ToDoList: React.FC = () => {
             <option value="inProgress">Em Andamento</option>
           </Select>
 
-          {/* Filtro por Ordem */}
           <Select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
@@ -499,35 +403,38 @@ const ToDoList: React.FC = () => {
             <option value="asc">Ordem Crescente</option>
             <option value="desc">Ordem Decrescente</option>
           </Select>
-        </div>
+        </FiltersWrapper>
 
-        <Button
-          onClick={() => {
-            setIsModalOpen(true);
-            fetchCategories();
-          }}
-        >
-          Criar Nova Tarefa
-        </Button>
-        <Button
-          onClick={() => {
-            setIsManageCategoriesModalOpen(true);
-            fetchCategories();
-          }}
-        >
-          Gerenciar Categorias
-        </Button>
+        <ButtonsWrapper>
+          <Button
+            onClick={() => {
+              setIsModalOpen(true);
+              fetchCategories();
+            }}
+          >
+            Criar Nova Tarefa
+          </Button>
+          <Button
+            onClick={() => {
+              setIsManageCategoriesModalOpen(true);
+              fetchCategories();
+            }}
+          >
+            Gerenciar Categorias
+          </Button>
+        </ButtonsWrapper>
+
         <TaskListWrapper>
           <TaskList>
             {filteredAndSortedTasks.map((task) => (
               <TaskItem
                 key={task.id}
-                $done={!!task.done} // Converte para booleano explicitamente
+                $done={!!task.done}
                 onClick={() => toggleTaskDone(task.id, task.done)}
                 onDoubleClick={() => {
-                  setEditTask(task); // Define a tarefa a ser editada
-                  setIsEditModalOpen(true); // Abre o modal de edição
-                }} // Evento de duplo clique
+                  setEditTask(task);
+                  setIsEditModalOpen(true);
+                }}
               >
                 <TaskDetails>
                   <TaskTitle $done={!!task.done}>{task.tittle}</TaskTitle>
@@ -560,15 +467,13 @@ const ToDoList: React.FC = () => {
         </TaskListWrapper>
       </ListWrapper>
 
-      {/* Modal para criar nova tarefa */}
+      {/* Modal Criar Tarefa */}
       {isModalOpen && (
         <ModalOverlay onClick={() => setIsModalOpen(false)}>
-          <ModalContent
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
+          <ModalContent onClick={(e) => e.stopPropagation()}>
             <ModalTitle>Criar Nova Tarefa</ModalTitle>
+
+            {formErrors.tittle && <ErrorMessage>{formErrors.tittle}</ErrorMessage>}
             <Input
               type="text"
               placeholder="Título"
@@ -577,6 +482,10 @@ const ToDoList: React.FC = () => {
                 setNewTask({ ...newTask, tittle: e.target.value })
               }
             />
+
+            {formErrors.description && (
+              <ErrorMessage>{formErrors.description}</ErrorMessage>
+            )}
             <Input
               type="text"
               placeholder="Descrição"
@@ -585,6 +494,7 @@ const ToDoList: React.FC = () => {
                 setNewTask({ ...newTask, description: e.target.value })
               }
             />
+
             <Select
               value={newTask.category}
               onChange={(e) =>
@@ -598,35 +508,66 @@ const ToDoList: React.FC = () => {
                 </option>
               ))}
             </Select>
-            <Button onClick={handleCreateTask}>Salvar</Button>
-            <Button onClick={() => setIsModalOpen(false)}>Cancelar</Button>
+
+            <Input
+              type="text"
+              placeholder="Ou digite uma nova categoria"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+            />
+
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Button
+                onClick={async () => {
+                  const token = localStorage.getItem("token");
+                  if (!token) return setError("Usuário não autenticado.");
+
+                  try {
+                    let categoryToUse = newTask.category;
+
+                    if (newCategory.trim()) {
+                      await createUserCategory(token, { category: newCategory });
+                      categoryToUse = newCategory;
+                      setNewCategory("");
+                      fetchCategories();
+                    }
+
+                    await createUserTask(token, {
+                      ...newTask,
+                      category: categoryToUse,
+                    });
+
+                    setIsModalOpen(false);
+                    setNewTask({ tittle: "", description: "", category: "" });
+                    setFormErrors({ tittle: "", description: "", category: "" });
+                    fetchTasks();
+                  } catch (err: any) {
+                    setFormErrors({
+                      ...formErrors,
+                      tittle: err.response?.data?.message || "Erro ao criar a tarefa.",
+                    });
+                  }
+                }}
+              >
+                Salvar
+              </Button>
+              <Button onClick={() => setIsModalOpen(false)}>Cancelar</Button>
+            </div>
           </ModalContent>
         </ModalOverlay>
       )}
 
-      {/* Modal para editar tarefa */}
+      {/* Modal Editar Tarefa */}
       {isEditModalOpen && editTask && (
-        <ModalOverlay
-          onClick={() => {
-            setIsEditModalOpen(false); // Fecha o modal ao clicar no overlay
-          }}
-        >
-          <ModalContent
-            onClick={(e) => {
-              e.stopPropagation(); // Previne o clique no conteúdo do modal de fechar o modal
-            }}
-          >
+        <ModalOverlay onClick={() => setIsEditModalOpen(false)}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
             <ModalTitle>Editar Tarefa</ModalTitle>
-            {formErrors.tittle && (
-              <ErrorMessage>{formErrors.tittle}</ErrorMessage>
-            )}
+            {formErrors.tittle && <ErrorMessage>{formErrors.tittle}</ErrorMessage>}
             <Input
               type="text"
               placeholder="Título"
               value={editTask.tittle}
-              onChange={(e) =>
-                setEditTask({ ...editTask, tittle: e.target.value })
-              }
+              onChange={(e) => setEditTask({ ...editTask, tittle: e.target.value })}
             />
             {formErrors.description && (
               <ErrorMessage>{formErrors.description}</ErrorMessage>
@@ -639,14 +580,10 @@ const ToDoList: React.FC = () => {
                 setEditTask({ ...editTask, description: e.target.value })
               }
             />
-            {formErrors.category && (
-              <ErrorMessage>{formErrors.category}</ErrorMessage>
-            )}
+            {formErrors.category && <ErrorMessage>{formErrors.category}</ErrorMessage>}
             <Select
               value={editTask.category}
-              onChange={(e) =>
-                setEditTask({ ...editTask, category: e.target.value })
-              }
+              onChange={(e) => setEditTask({ ...editTask, category: e.target.value })}
             >
               <option value="">Selecione uma Categoria</option>
               {categories.map((category) => (
@@ -655,19 +592,31 @@ const ToDoList: React.FC = () => {
                 </option>
               ))}
             </Select>
-            <Button onClick={handleEditTask}>Salvar</Button>
+            <Button onClick={async () => {
+              const token = localStorage.getItem("token");
+              if (!token) return setError("Usuário não autenticado.");
+              try {
+                await alterUserTask(token, editTask.id, editTask);
+                fetchTasks();
+                setIsEditModalOpen(false);
+                setEditTask(null);
+                setFormErrors({ tittle: "", description: "", category: "" });
+              } catch (err: any) {
+                setFormErrors({
+                  ...formErrors,
+                  tittle: err.response?.data?.message || "Erro ao alterar a tarefa.",
+                });
+              }
+            }}>Salvar</Button>
             <Button onClick={() => setIsEditModalOpen(false)}>Cancelar</Button>
           </ModalContent>
         </ModalOverlay>
       )}
 
+      {/* Modal Gerenciar Categorias */}
       {isManageCategoriesModalOpen && (
         <ModalOverlay onClick={() => setIsManageCategoriesModalOpen(false)}>
-          <ModalContent
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
+          <ModalContent onClick={(e) => e.stopPropagation()}>
             <ModalTitle>Gerenciar Categorias</ModalTitle>
             <Input
               type="text"
@@ -675,22 +624,35 @@ const ToDoList: React.FC = () => {
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
             />
-            <Button onClick={handleCreateCategory}>Adicionar Categoria</Button>
+            <Button
+              onClick={async () => {
+                const token = localStorage.getItem("token");
+                if (!token) return setError("Usuário não autenticado.");
+
+                try {
+                  await createUserCategory(token, { category: newCategory });
+                  setNewCategory("");
+                  fetchCategories();
+                } catch (err: any) {
+                  setError(err.response?.data?.message || "Erro ao criar a categoria.");
+                }
+              }}
+            >
+              Adicionar
+            </Button>
+
             <CategoryList>
               {categories.map((category) => (
                 <CategoryItem key={category.id}>
                   <span>{category.category}</span>
-                  <DeleteButton
-                    onClick={() => handleDeleteCategory(category.id)}
-                  >
+                  <DeleteButton onClick={() => handleDeleteCategory(category.id)}>
                     Excluir
                   </DeleteButton>
                 </CategoryItem>
               ))}
             </CategoryList>
-            <Button onClick={() => setIsManageCategoriesModalOpen(false)}>
-              Fechar
-            </Button>
+
+            <Button onClick={() => setIsManageCategoriesModalOpen(false)}>Fechar</Button>
           </ModalContent>
         </ModalOverlay>
       )}
