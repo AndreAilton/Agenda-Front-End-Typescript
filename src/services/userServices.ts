@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://andreailtondev.tech/api/agenda/";
 
 export const getUser = async (token: string): Promise<any> => {
   try {

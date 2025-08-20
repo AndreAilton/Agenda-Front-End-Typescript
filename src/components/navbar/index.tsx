@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FaBars, FaUser } from "react-icons/fa";
-import LogoImage from "../../assets/imgs/logo.png"; // Ajuste o caminho conforme necessário
+import LogoImage from "../../assets/imgs/Logo.png"; // Ajuste o caminho conforme necessário
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
