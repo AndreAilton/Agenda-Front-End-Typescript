@@ -6,7 +6,6 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "start": "pm2 start \"serve -s . -l 4002 --single\" --name react-agenda",
     "preview": "vite preview"
   },
   "dependencies": {

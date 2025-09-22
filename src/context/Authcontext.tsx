@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { getUser } from "../services/authService";
 
-
 interface AuthContextType {
   isLoggedIn: boolean;
   login: (token: string) => void;
@@ -10,30 +9,30 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-     const verifyToken = async () => {
-        if (token) {
-          const response = await getUser(token);
-          if (response == false) {
-            console.log("Token inválido ou usuário não encontrado.");
-            setIsLoggedIn(false);
-            return;
-
-          }
-          setIsLoggedIn(true);
-        } else {
-          console.log("Token não encontrado, usuário não autenticado.");
+    const verifyToken = async () => {
+      if (token) {
+        const response = await getUser(token);
+        if (response == false) {
+          console.log("Token inválido ou usuário não encontrado.");
           setIsLoggedIn(false);
-        } 
-  
+          return;
+        }
+        setIsLoggedIn(true);
+      } else {
+        console.log("Token não encontrado, usuário não autenticado.");
+        setIsLoggedIn(false);
       }
-    
-    verifyToken()
+    };
+
+    verifyToken();
   }, []);
 
   const login = (token: string) => {
@@ -45,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem("token");
     setIsLoggedIn(false);
 
-    window.location.reload()
+    window.location.reload();
   };
 
   return (

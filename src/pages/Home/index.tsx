@@ -1,6 +1,6 @@
 import React from "react";
 import ToDoList from "../To-do-list";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../context/AuthContext";
 import LandingPage from "../../components/landing";
 
 const Home: React.FC = () => {

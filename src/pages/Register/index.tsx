@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { register, login as loginService } from "../../services/authService";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../context/AuthContext";
 
 const Container = styled.div`
   display: flex;

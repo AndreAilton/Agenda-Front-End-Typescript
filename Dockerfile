@@ -1,30 +1,35 @@
-# -----------------------
-# Etapa 1: Build React
-# -----------------------
+# Etapa 1: Build da aplicação
 FROM node:20-alpine AS build
 
+# Define a pasta de trabalho
 WORKDIR /app
 
+# Copia os arquivos de dependências primeiro
 COPY package*.json ./
+
+# Instala dependências
 RUN npm install
 
+# Copia o restante do código
 COPY . .
+
+# Build para produção
 RUN npm run build
 
-
-# -----------------------
-# Etapa 2: Nginx (Produção)
-# -----------------------
+# Etapa 2: Servir com Nginx
 FROM nginx:alpine
 
-# Copiar build do React para pasta padrão do nginx
+# Remove o conteúdo padrão do Nginx
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copia o build da aplicação
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Remover configuração default e adicionar a nossa
-RUN rm /etc/nginx/conf.d/default.conf
+# Copia configuração customizada do Nginx (vamos criar já já)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expor porta 80 (Nginx serve nessa porta por padrão)
+# Expõe a porta 80
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
+# Fim do Dockerfile
