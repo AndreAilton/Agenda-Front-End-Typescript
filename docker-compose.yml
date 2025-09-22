@@ -1,0 +1,7 @@
+services:
+  react-agenda:
+    build: .
+    container_name: react-agenda
+    ports:
+      - "8080:80"
+    restart: always
