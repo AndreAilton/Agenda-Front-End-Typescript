@@ -1,4 +1,4 @@
-import{r,j as e,d as t}from"./index-d8kVQcWg.js";import{h as C,g as k,d as w}from"./userServices-7QfDhroz.js";const T="/agenda/assets/user-Ovi5nVIQ.png",n=t.div`
+import{r,j as e,d as t}from"./index-Bb2X2_HT.js";import{h as C,g as k,d as w}from"./userServices-Lw5cKpjo.js";const T="/agenda/assets/user-Ovi5nVIQ.png",n=t.div`
   display: flex;
   flex-direction: column;
   align-items: center;
