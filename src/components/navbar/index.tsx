@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FaBars, FaUser } from "react-icons/fa";
 import LogoImage from "../../assets/imgs/Logo.png"; // Ajuste o caminho conforme necessário
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/authContext";
 import { useNavigate } from "react-router-dom";
 
 const StyledLink = styled(Link)`
@@ -116,7 +116,7 @@ const Navbar: React.FC = () => {
   if (isLoggedIn === undefined) {
     return null; // Não renderiza nada enquanto o estado não é carregado
   }
-  
+
   return (
     <div>
       {isLoggedIn ? (
@@ -147,14 +147,18 @@ const Navbar: React.FC = () => {
             </MenuItem>
 
             <MenuItem>
-              <StyledLink to="/" onClick={() => {navigate("/"),logout();}}>
+              <StyledLink
+                to="/"
+                onClick={() => {
+                  navigate("/"), logout();
+                }}
+              >
                 <FaUser />
                 Sair
               </StyledLink>
             </MenuItem>
           </Menu>
         </NavbarContainer>
-
       ) : (
         <NavbarContainer>
           <div
