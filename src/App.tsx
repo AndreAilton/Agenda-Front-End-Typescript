@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import Loading from "./components/Loading";
 import AppRoutes from "./routes"; // aqui sim estamos importando uma função
 import Navbar from "./components/navbar";
-import { AuthProvider } from "./context/AuthContext.tsx";
+import { AuthProvider } from "./Context/AuthContext.tsx";
 
 function App() {
   return (
